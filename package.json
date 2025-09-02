@@ -1,0 +1,16 @@
+{
+  "name": "tauri_lustre_app",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.3"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.8.0",
+    "lodash": "^4.17.21"
+  }
+}
