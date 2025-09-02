@@ -863,7 +863,7 @@ var require_lodash = __commonJS({
           return result2;
         }
         function lazyValue() {
-          var array3 = this.__wrapped__.value(), dir = this.__dir__, isArr = isArray(array3), isRight = dir < 0, arrLength = isArr ? array3.length : 0, view2 = getView(0, arrLength, this.__views__), start4 = view2.start, end = view2.end, length3 = end - start4, index3 = isRight ? end : start4 - 1, iteratees = this.__iteratees__, iterLength = iteratees.length, resIndex = 0, takeCount = nativeMin(length3, this.__takeCount__);
+          var array3 = this.__wrapped__.value(), dir = this.__dir__, isArr = isArray(array3), isRight = dir < 0, arrLength = isArr ? array3.length : 0, view3 = getView(0, arrLength, this.__views__), start4 = view3.start, end = view3.end, length3 = end - start4, index3 = isRight ? end : start4 - 1, iteratees = this.__iteratees__, iterLength = iteratees.length, resIndex = 0, takeCount = nativeMin(length3, this.__takeCount__);
           if (!isArr || !isRight && arrLength == length3 && takeCount == length3) {
             return baseWrapperValue(array3, this.__actions__);
           }
@@ -6048,14 +6048,6 @@ function makeError(variant, file, module, line, fn, message, extra) {
   return error;
 }
 
-// build/dev/javascript/gleam_stdlib/gleam/order.mjs
-var Lt = class extends CustomType {
-};
-var Eq = class extends CustomType {
-};
-var Gt = class extends CustomType {
-};
-
 // build/dev/javascript/gleam_stdlib/gleam/option.mjs
 var Some = class extends CustomType {
   constructor($0) {
@@ -6823,6 +6815,19 @@ function values(dict3) {
   return do_values_loop(list_of_pairs, toList([]));
 }
 
+// build/dev/javascript/gleam_stdlib/gleam/order.mjs
+var Lt = class extends CustomType {
+};
+var Eq = class extends CustomType {
+};
+var Gt = class extends CustomType {
+};
+
+// build/dev/javascript/gleam_stdlib/gleam/int.mjs
+function add(a, b) {
+  return a + b;
+}
+
 // build/dev/javascript/gleam_stdlib/gleam/list.mjs
 var Ascending = class extends CustomType {
 };
@@ -7273,6 +7278,83 @@ function sort(list4, compare4) {
   }
 }
 
+// build/dev/javascript/gleam_stdlib/gleam/string.mjs
+function append2(first, second) {
+  return first + second;
+}
+function concat_loop(loop$strings, loop$accumulator) {
+  while (true) {
+    let strings = loop$strings;
+    let accumulator = loop$accumulator;
+    if (strings instanceof Empty) {
+      return accumulator;
+    } else {
+      let string5 = strings.head;
+      let strings$1 = strings.tail;
+      loop$strings = strings$1;
+      loop$accumulator = accumulator + string5;
+    }
+  }
+}
+function concat2(strings) {
+  return concat_loop(strings, "");
+}
+function repeat_loop(loop$string, loop$times, loop$acc) {
+  while (true) {
+    let string5 = loop$string;
+    let times = loop$times;
+    let acc = loop$acc;
+    let $ = times <= 0;
+    if ($) {
+      return acc;
+    } else {
+      loop$string = string5;
+      loop$times = times - 1;
+      loop$acc = acc + string5;
+    }
+  }
+}
+function repeat(string5, times) {
+  return repeat_loop(string5, times, "");
+}
+function join_loop(loop$strings, loop$separator, loop$accumulator) {
+  while (true) {
+    let strings = loop$strings;
+    let separator = loop$separator;
+    let accumulator = loop$accumulator;
+    if (strings instanceof Empty) {
+      return accumulator;
+    } else {
+      let string5 = strings.head;
+      let strings$1 = strings.tail;
+      loop$strings = strings$1;
+      loop$separator = separator;
+      loop$accumulator = accumulator + separator + string5;
+    }
+  }
+}
+function join(strings, separator) {
+  if (strings instanceof Empty) {
+    return "";
+  } else {
+    let first$1 = strings.head;
+    let rest = strings.tail;
+    return join_loop(rest, separator, first$1);
+  }
+}
+function do_to_utf_codepoints(string5) {
+  let _pipe = string5;
+  let _pipe$1 = string_to_codepoint_integer_list(_pipe);
+  return map(_pipe$1, codepoint);
+}
+function to_utf_codepoints(string5) {
+  return do_to_utf_codepoints(string5);
+}
+function inspect2(term) {
+  let _pipe = inspect(term);
+  return identity(_pipe);
+}
+
 // build/dev/javascript/gleam_stdlib/gleam/dynamic/decode.mjs
 var Decoder = class extends CustomType {
   constructor(function$) {
@@ -7573,107 +7655,6 @@ function base16_encode(bit_array2) {
   return result;
 }
 
-// build/dev/javascript/gleam_stdlib/gleam/int.mjs
-function add(a, b) {
-  return a + b;
-}
-
-// build/dev/javascript/gleam_stdlib/gleam/string.mjs
-function append2(first, second) {
-  return first + second;
-}
-function concat_loop(loop$strings, loop$accumulator) {
-  while (true) {
-    let strings = loop$strings;
-    let accumulator = loop$accumulator;
-    if (strings instanceof Empty) {
-      return accumulator;
-    } else {
-      let string5 = strings.head;
-      let strings$1 = strings.tail;
-      loop$strings = strings$1;
-      loop$accumulator = accumulator + string5;
-    }
-  }
-}
-function concat2(strings) {
-  return concat_loop(strings, "");
-}
-function repeat_loop(loop$string, loop$times, loop$acc) {
-  while (true) {
-    let string5 = loop$string;
-    let times = loop$times;
-    let acc = loop$acc;
-    let $ = times <= 0;
-    if ($) {
-      return acc;
-    } else {
-      loop$string = string5;
-      loop$times = times - 1;
-      loop$acc = acc + string5;
-    }
-  }
-}
-function repeat(string5, times) {
-  return repeat_loop(string5, times, "");
-}
-function join_loop(loop$strings, loop$separator, loop$accumulator) {
-  while (true) {
-    let strings = loop$strings;
-    let separator = loop$separator;
-    let accumulator = loop$accumulator;
-    if (strings instanceof Empty) {
-      return accumulator;
-    } else {
-      let string5 = strings.head;
-      let strings$1 = strings.tail;
-      loop$strings = strings$1;
-      loop$separator = separator;
-      loop$accumulator = accumulator + separator + string5;
-    }
-  }
-}
-function join(strings, separator) {
-  if (strings instanceof Empty) {
-    return "";
-  } else {
-    let first$1 = strings.head;
-    let rest = strings.tail;
-    return join_loop(rest, separator, first$1);
-  }
-}
-function do_to_utf_codepoints(string5) {
-  let _pipe = string5;
-  let _pipe$1 = string_to_codepoint_integer_list(_pipe);
-  return map(_pipe$1, codepoint);
-}
-function to_utf_codepoints(string5) {
-  return do_to_utf_codepoints(string5);
-}
-function inspect2(term) {
-  let _pipe = inspect(term);
-  return identity(_pipe);
-}
-
-// build/dev/javascript/gleam_json/gleam_json_ffi.mjs
-function object(entries) {
-  return Object.fromEntries(entries);
-}
-function identity2(x) {
-  return x;
-}
-
-// build/dev/javascript/gleam_json/gleam/json.mjs
-function string2(input) {
-  return identity2(input);
-}
-function bool(input) {
-  return identity2(input);
-}
-function object2(entries) {
-  return object(entries);
-}
-
 // build/dev/javascript/gleam_stdlib/gleam/bool.mjs
 function guard(requirement, consequence, alternative) {
   if (requirement) {
@@ -7691,12 +7672,31 @@ function lazy_guard(requirement, consequence, alternative) {
 }
 
 // build/dev/javascript/gleam_stdlib/gleam/function.mjs
-function identity3(x) {
+function identity2(x) {
   return x;
 }
 function tap(arg, effect) {
   effect(arg);
   return arg;
+}
+
+// build/dev/javascript/gleam_json/gleam_json_ffi.mjs
+function object(entries) {
+  return Object.fromEntries(entries);
+}
+function identity3(x) {
+  return x;
+}
+
+// build/dev/javascript/gleam_json/gleam/json.mjs
+function string2(input) {
+  return identity3(input);
+}
+function bool(input) {
+  return identity3(input);
+}
+function object2(entries) {
+  return object(entries);
 }
 
 // build/dev/javascript/lustre/lustre/internals/constants.ffi.mjs
@@ -8368,7 +8368,7 @@ function do_add_event(handlers, mapper, path, name, handler) {
         return new Handler(
           handler2.prevent_default,
           handler2.stop_propagation,
-          identity3(mapper)(handler2.message)
+          identity2(mapper)(handler2.message)
         );
       }
     )
@@ -8398,8 +8398,8 @@ function add_attributes(handlers, mapper, path, attributes) {
   );
 }
 function compose_mapper(mapper, child_mapper) {
-  let $ = isReferenceEqual(mapper, identity3);
-  let $1 = isReferenceEqual(child_mapper, identity3);
+  let $ = isReferenceEqual(mapper, identity2);
+  let $1 = isReferenceEqual(child_mapper, identity2);
   if ($1) {
     return mapper;
   } else if ($) {
@@ -8530,7 +8530,7 @@ function add_children(events, mapper, path, child_index, children) {
 function element2(tag, attributes, children) {
   return element(
     "",
-    identity3,
+    identity2,
     "",
     tag,
     attributes,
@@ -8541,18 +8541,18 @@ function element2(tag, attributes, children) {
   );
 }
 function text2(content) {
-  return text("", identity3, content);
+  return text("", identity2, content);
 }
 function none2() {
-  return text("", identity3, "");
+  return text("", identity2, "");
 }
 function fragment2(children) {
-  return fragment("", identity3, children, empty2());
+  return fragment("", identity2, children, empty2());
 }
 function unsafe_raw_html(namespace, tag, attributes, inner_html) {
   return unsafe_inner_html(
     "",
-    identity3,
+    identity2,
     namespace,
     tag,
     attributes,
@@ -9603,7 +9603,7 @@ function diff(events, old, new$9) {
     root2,
     empty_list,
     empty_list,
-    identity3,
+    identity2,
     tick(events)
   );
 }
@@ -10090,7 +10090,7 @@ function element3(tag, attributes, children) {
   children$1 = $[1];
   return element(
     "",
-    identity3,
+    identity2,
     "",
     tag,
     attributes,
@@ -10108,7 +10108,7 @@ function namespaced2(namespace, tag, attributes, children) {
   children$1 = $[1];
   return element(
     "",
-    identity3,
+    identity2,
     namespace,
     tag,
     attributes,
@@ -10124,7 +10124,7 @@ function fragment3(children) {
   let children$1;
   keyed_children = $[0];
   children$1 = $[1];
-  return fragment("", identity3, children$1, keyed_children);
+  return fragment("", identity2, children$1, keyed_children);
 }
 
 // build/dev/javascript/lustre/lustre/vdom/virtualise.ffi.mjs
@@ -10252,10 +10252,10 @@ var virtualiseAttribute = (attr) => {
 // build/dev/javascript/lustre/lustre/runtime/client/runtime.ffi.mjs
 var is_browser = () => !!document2();
 var Runtime = class {
-  constructor(root3, [model, effects], view2, update3) {
+  constructor(root3, [model, effects], view3, update3) {
     this.root = root3;
     this.#model = model;
-    this.#view = view2;
+    this.#view = view3;
     this.#update = update3;
     this.root.addEventListener("context-request", (event4) => {
       if (!(event4.context && event4.callback)) return;
@@ -10480,8 +10480,8 @@ function new$6(options) {
 // build/dev/javascript/lustre/lustre/runtime/client/spa.ffi.mjs
 var Spa = class {
   #runtime;
-  constructor(root3, [init2, effects], update3, view2) {
-    this.#runtime = new Runtime(root3, [init2, effects], view2, update3);
+  constructor(root3, [init2, effects], update3, view3) {
+    this.#runtime = new Runtime(root3, [init2, effects], view3, update3);
   }
   send(message) {
     switch (message.constructor) {
@@ -10504,20 +10504,20 @@ var Spa = class {
     this.#runtime.emit(event4, data);
   }
 };
-var start = ({ init: init2, update: update3, view: view2 }, selector, flags) => {
+var start = ({ init: init2, update: update3, view: view3 }, selector, flags) => {
   if (!is_browser()) return new Error2(new NotABrowser());
   const root3 = selector instanceof HTMLElement ? selector : document2().querySelector(selector);
   if (!root3) return new Error2(new ElementNotFound(selector));
-  return new Ok(new Spa(root3, init2(flags), update3, view2));
+  return new Ok(new Spa(root3, init2(flags), update3, view3));
 };
 
 // build/dev/javascript/lustre/lustre.mjs
 var App = class extends CustomType {
-  constructor(init2, update3, view2, config) {
+  constructor(init2, update3, view3, config) {
     super();
     this.init = init2;
     this.update = update3;
-    this.view = view2;
+    this.view = view3;
     this.config = config;
   }
 };
@@ -10529,8 +10529,8 @@ var ElementNotFound = class extends CustomType {
 };
 var NotABrowser = class extends CustomType {
 };
-function application(init2, update3, view2) {
-  return new App(init2, update3, view2, new$6(empty_list));
+function application(init2, update3, view3) {
+  return new App(init2, update3, view3, new$6(empty_list));
 }
 function start3(app, selector, start_args) {
   return guard(
@@ -10542,6 +10542,12 @@ function start3(app, selector, start_args) {
   );
 }
 
+// build/dev/javascript/sketch/sketch.ffi.mjs
+var id = 0;
+function uniqueId() {
+  return id++;
+}
+
 // build/dev/javascript/gleam_stdlib/gleam/pair.mjs
 function map_second(pair, fun) {
   let a;
@@ -10549,50 +10555,6 @@ function map_second(pair, fun) {
   a = pair[0];
   b = pair[1];
   return [a, fun(b)];
-}
-
-// build/dev/javascript/lustre/lustre/event.mjs
-function is_immediate_event(name) {
-  if (name === "input") {
-    return true;
-  } else if (name === "change") {
-    return true;
-  } else if (name === "focus") {
-    return true;
-  } else if (name === "focusin") {
-    return true;
-  } else if (name === "focusout") {
-    return true;
-  } else if (name === "blur") {
-    return true;
-  } else if (name === "select") {
-    return true;
-  } else {
-    return false;
-  }
-}
-function on(name, handler) {
-  return event(
-    name,
-    map2(handler, (msg) => {
-      return new Handler(false, false, msg);
-    }),
-    empty_list,
-    never,
-    never,
-    is_immediate_event(name),
-    0,
-    0
-  );
-}
-function on_click(msg) {
-  return on("click", success(msg));
-}
-
-// build/dev/javascript/sketch/sketch.ffi.mjs
-var id = 0;
-function uniqueId() {
-  return id++;
 }
 
 // build/dev/javascript/murmur3a/murmur3a_ffi.mjs
@@ -10813,7 +10775,7 @@ var SelectorProperty = class extends CustomType {
     this.properties = properties;
   }
 };
-function new$8() {
+function new$7() {
   return new Cache(new_map(), new_map());
 }
 function class$2(content) {
@@ -11558,9 +11520,9 @@ function stylesheet(strategy) {
   return new Ok(
     (() => {
       if (strategy instanceof Ephemeral) {
-        return new StyleSheet(new$8(), id2, false);
+        return new StyleSheet(new$7(), id2, false);
       } else {
-        return new StyleSheet(new$8(), id2, true);
+        return new StyleSheet(new$7(), id2, true);
       }
     })()
   );
@@ -11617,7 +11579,7 @@ function setup() {
     return new Error2(void 0);
   }
 }
-function render2(stylesheet2, outputs, view2) {
+function render2(stylesheet2, outputs, view3) {
   let $ = setCurrentStylesheet(stylesheet2);
   if (!($ instanceof Ok)) {
     throw makeError(
@@ -11636,7 +11598,7 @@ function render2(stylesheet2, outputs, view2) {
       }
     );
   }
-  let new_view = view2();
+  let new_view = view3();
   let $1 = getStyleSheet();
   if ($1 instanceof Ok) {
     let stylesheet$1 = $1[0];
@@ -11644,11 +11606,11 @@ function render2(stylesheet2, outputs, view2) {
     return fold(
       outputs,
       new_view,
-      (view3, stylesheet3) => {
+      (view4, stylesheet3) => {
         if (stylesheet3 instanceof Document2) {
           let css_stylesheet = stylesheet3.css_stylesheet;
           return tap(
-            view3,
+            view4,
             (_2) => {
               let $2 = dismissCurrentStylesheet();
               return replaceSync(content, css_stylesheet);
@@ -11657,14 +11619,14 @@ function render2(stylesheet2, outputs, view2) {
         } else if (stylesheet3 instanceof Shadow) {
           let css_stylesheet = stylesheet3.css_stylesheet;
           return tap(
-            view3,
+            view4,
             (_2) => {
               let $2 = dismissCurrentStylesheet();
               return replaceSync(content, css_stylesheet);
             }
           );
         } else {
-          return fragment2(toList([style(toList([]), content), view3]));
+          return fragment2(toList([style(toList([]), content), view4]));
         }
       }
     );
@@ -11674,6 +11636,99 @@ function render2(stylesheet2, outputs, view2) {
 }
 function node() {
   return new Node();
+}
+
+// build/dev/javascript/tauri_lustre_app/lodash_ffi.mjs
+var import_lodash = __toESM(require_lodash(), 1);
+function upperCase(str) {
+  return import_lodash.default.upperCase(str);
+}
+
+// build/dev/javascript/tauri_lustre_app/tauri_ffi.mjs
+var isTauri = typeof window !== "undefined" && window.__TAURI_INTERNALS__;
+var gleamCallback = null;
+function setCallback(cb) {
+  gleamCallback = cb;
+}
+async function invoke(cmd, args) {
+  try {
+    if (typeof window !== "undefined" && window.__TAURI_INTERNALS__) {
+      const result = await window.__TAURI_INTERNALS__.invoke(cmd, args);
+      if (gleamCallback) gleamCallback(cmd, result);
+      return result;
+    }
+    if (typeof window !== "undefined" && window.__TAURI__) {
+      const result = await window.__TAURI__.core.invoke(cmd, args);
+      if (gleamCallback) gleamCallback(cmd, result);
+      return result;
+    }
+    throw new Error("Tauri globals not found");
+  } catch (error) {
+    console.log("Tauri not available, using simulation:", error.message);
+    const result = `Simulated result for ${cmd}`;
+    if (gleamCallback) gleamCallback(cmd, result);
+    return result;
+  }
+}
+
+// build/dev/javascript/tauri_lustre_app/types.mjs
+var Model = class extends CustomType {
+  constructor(greeting, loading) {
+    super();
+    this.greeting = greeting;
+    this.loading = loading;
+  }
+};
+var CallCommand = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
+var CommandResult = class extends CustomType {
+  constructor($0, $1) {
+    super();
+    this[0] = $0;
+    this[1] = $1;
+  }
+};
+
+// build/dev/javascript/lustre/lustre/event.mjs
+function is_immediate_event(name) {
+  if (name === "input") {
+    return true;
+  } else if (name === "change") {
+    return true;
+  } else if (name === "focus") {
+    return true;
+  } else if (name === "focusin") {
+    return true;
+  } else if (name === "focusout") {
+    return true;
+  } else if (name === "blur") {
+    return true;
+  } else if (name === "select") {
+    return true;
+  } else {
+    return false;
+  }
+}
+function on(name, handler) {
+  return event(
+    name,
+    map2(handler, (msg) => {
+      return new Handler(false, false, msg);
+    }),
+    empty_list,
+    never,
+    never,
+    is_immediate_event(name),
+    0,
+    0
+  );
+}
+function on_click(msg) {
+  return on("click", success(msg));
 }
 
 // build/dev/javascript/sketch_lustre/sketch/lustre/element.mjs
@@ -11723,88 +11778,7 @@ function h1(class$5, attributes, children) {
   return element4("h1", class$5, attributes, children);
 }
 
-// build/dev/javascript/tauri_lustre_app/lodash_ffi.mjs
-var import_lodash = __toESM(require_lodash(), 1);
-function upperCase(str) {
-  return import_lodash.default.upperCase(str);
-}
-
-// build/dev/javascript/tauri_lustre_app/tauri_ffi.mjs
-var isTauri = typeof window !== "undefined" && window.__TAURI_INTERNALS__;
-var gleamCallback = null;
-function setCallback(cb) {
-  gleamCallback = cb;
-}
-async function invoke(cmd, args) {
-  try {
-    if (typeof window !== "undefined" && window.__TAURI_INTERNALS__) {
-      const result = await window.__TAURI_INTERNALS__.invoke(cmd, args);
-      if (gleamCallback) gleamCallback(cmd, result);
-      return result;
-    }
-    if (typeof window !== "undefined" && window.__TAURI__) {
-      const result = await window.__TAURI__.core.invoke(cmd, args);
-      if (gleamCallback) gleamCallback(cmd, result);
-      return result;
-    }
-    throw new Error("Tauri globals not found");
-  } catch (error) {
-    console.log("Tauri not available, using simulation:", error.message);
-    const result = `Simulated result for ${cmd}`;
-    if (gleamCallback) gleamCallback(cmd, result);
-    return result;
-  }
-}
-
-// build/dev/javascript/tauri_lustre_app/tauri_lustre_app.mjs
-var FILEPATH4 = "src\\tauri_lustre_app.gleam";
-var Model = class extends CustomType {
-  constructor(greeting, loading) {
-    super();
-    this.greeting = greeting;
-    this.loading = loading;
-  }
-};
-var CallCommand = class extends CustomType {
-  constructor($0) {
-    super();
-    this[0] = $0;
-  }
-};
-var CommandResult = class extends CustomType {
-  constructor($0, $1) {
-    super();
-    this[0] = $0;
-    this[1] = $1;
-  }
-};
-function init(_2) {
-  return [new Model("Click the button to greet!", false), none()];
-}
-function update2(model, msg) {
-  if (msg instanceof CallCommand) {
-    let cmd = msg[0];
-    let args = object2(toList([["name", string2("Chouaib")]]));
-    let effect = from(
-      (dispatch) => {
-        setCallback(
-          (cmd2, result) => {
-            return dispatch(new CommandResult(cmd2, result));
-          }
-        );
-        return invoke(cmd, args);
-      }
-    );
-    return [new Model(model.greeting, true), effect];
-  } else {
-    let cmd = msg[0];
-    let result = msg[1];
-    return [
-      new Model("Command " + cmd + " \u2192 " + result, false),
-      none()
-    ];
-  }
-}
+// build/dev/javascript/tauri_lustre_app/styles.mjs
 function container_style() {
   return class$4(toList([padding(px(20))]));
 }
@@ -11837,6 +11811,8 @@ function button_loading_style() {
     ])
   );
 }
+
+// build/dev/javascript/tauri_lustre_app/view.mjs
 function view(model, stylesheet2) {
   return render2(
     stylesheet2,
@@ -11887,6 +11863,41 @@ function view(model, stylesheet2) {
     }
   );
 }
+
+// build/dev/javascript/tauri_lustre_app/app.mjs
+function init(_2) {
+  return [new Model("Click the button to greet!", false), none()];
+}
+function update2(model, msg) {
+  if (msg instanceof CallCommand) {
+    let cmd = msg[0];
+    let args = object2(toList([["name", string2("Chouaib")]]));
+    let effect = from(
+      (dispatch) => {
+        setCallback(
+          (cmd2, result) => {
+            return dispatch(new CommandResult(cmd2, result));
+          }
+        );
+        return invoke(cmd, args);
+      }
+    );
+    return [new Model(model.greeting, true), effect];
+  } else {
+    let cmd = msg[0];
+    let result = msg[1];
+    return [
+      new Model("Command " + cmd + " \u2192 " + result, false),
+      none()
+    ];
+  }
+}
+function view2(model, stylesheet2) {
+  return view(model, stylesheet2);
+}
+
+// build/dev/javascript/tauri_lustre_app/tauri_lustre_app.mjs
+var FILEPATH4 = "src\\tauri_lustre_app.gleam";
 function main() {
   let $ = setup();
   let stylesheet2;
@@ -11897,44 +11908,32 @@ function main() {
       "let_assert",
       FILEPATH4,
       "tauri_lustre_app",
-      121,
+      11,
       "main",
       "Pattern match failed, no pattern matched the value.",
-      {
-        value: $,
-        start: 2925,
-        end: 2974,
-        pattern_start: 2936,
-        pattern_end: 2950
-      }
+      { value: $, start: 171, end: 220, pattern_start: 182, pattern_end: 196 }
     );
   }
   let result = upperCase("hello world");
   console_log(result);
   global3(stylesheet2, global2("body", toList([margin(px(0))])));
-  let app = application(
+  let lustre_app = application(
     init,
     update2,
     (_capture) => {
-      return view(_capture, stylesheet2);
+      return view2(_capture, stylesheet2);
     }
   );
-  let $1 = start3(app, "#app", void 0);
+  let $1 = start3(lustre_app, "#app", void 0);
   if (!($1 instanceof Ok)) {
     throw makeError(
       "let_assert",
       FILEPATH4,
       "tauri_lustre_app",
-      126,
+      16,
       "main",
       "Pattern match failed, no pattern matched the value.",
-      {
-        value: $1,
-        start: 3174,
-        end: 3223,
-        pattern_start: 3185,
-        pattern_end: 3190
-      }
+      { value: $1, start: 443, end: 499, pattern_start: 454, pattern_end: 459 }
     );
   }
   return void 0;
