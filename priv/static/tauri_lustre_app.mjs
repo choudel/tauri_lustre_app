@@ -1240,7 +1240,7 @@ var require_lodash = __commonJS({
           if (typeof func != "function") {
             throw new TypeError2(FUNC_ERROR_TEXT);
           }
-          return setTimeout2(function() {
+          return setTimeout3(function() {
             func.apply(undefined2, args);
           }, wait);
         }
@@ -3071,7 +3071,7 @@ var require_lodash = __commonJS({
           return object4[key];
         }
         var setData2 = shortOut(baseSetData);
-        var setTimeout2 = ctxSetTimeout || function(func, wait) {
+        var setTimeout3 = ctxSetTimeout || function(func, wait) {
           return root3.setTimeout(func, wait);
         };
         var setToString = shortOut(baseSetToString);
@@ -3863,7 +3863,7 @@ var require_lodash = __commonJS({
           }
           function leadingEdge(time) {
             lastInvokeTime = time;
-            timerId = setTimeout2(timerExpired, wait);
+            timerId = setTimeout3(timerExpired, wait);
             return leading ? invokeFunc(time) : result2;
           }
           function remainingWait(time) {
@@ -3879,7 +3879,7 @@ var require_lodash = __commonJS({
             if (shouldInvoke(time)) {
               return trailingEdge(time);
             }
-            timerId = setTimeout2(timerExpired, remainingWait(time));
+            timerId = setTimeout3(timerExpired, remainingWait(time));
           }
           function trailingEdge(time) {
             timerId = undefined2;
@@ -3910,12 +3910,12 @@ var require_lodash = __commonJS({
               }
               if (maxing) {
                 clearTimeout2(timerId);
-                timerId = setTimeout2(timerExpired, wait);
+                timerId = setTimeout3(timerExpired, wait);
                 return invokeFunc(lastCallTime);
               }
             }
             if (timerId === undefined2) {
-              timerId = setTimeout2(timerExpired, wait);
+              timerId = setTimeout3(timerExpired, wait);
             }
             return result2;
           }
@@ -4367,7 +4367,7 @@ var require_lodash = __commonJS({
             result2[value] = [key];
           }
         }, getIteratee);
-        var invoke2 = baseRest(baseInvoke);
+        var invoke3 = baseRest(baseInvoke);
         function keys2(object4) {
           return isArrayLike(object4) ? arrayLikeKeys(object4) : baseKeys(object4);
         }
@@ -5209,7 +5209,7 @@ var require_lodash = __commonJS({
         lodash.includes = includes;
         lodash.indexOf = indexOf;
         lodash.inRange = inRange;
-        lodash.invoke = invoke2;
+        lodash.invoke = invoke3;
         lodash.isArguments = isArguments;
         lodash.isArray = isArray;
         lodash.isArrayBuffer = isArrayBuffer;
@@ -9609,7 +9609,7 @@ function diff(events, old, new$9) {
 }
 
 // build/dev/javascript/lustre/lustre/vdom/reconciler.ffi.mjs
-var setTimeout = globalThis.setTimeout;
+var setTimeout2 = globalThis.setTimeout;
 var clearTimeout = globalThis.clearTimeout;
 var createElementNS = (ns, name) => document2().createElementNS(ns, name);
 var createTextNode = (data) => document2().createTextNode(data);
@@ -9962,7 +9962,7 @@ var Reconciler = class {
     const debounce = debouncers.get(type);
     if (debounce) {
       clearTimeout(debounce.timeout);
-      debounce.timeout = setTimeout(() => {
+      debounce.timeout = setTimeout2(() => {
         if (event4 === throttles.get(type)?.lastEvent) return;
         this.#dispatch(data, path, type, immediate);
       }, debounce.delay);
@@ -10504,10 +10504,10 @@ var Spa = class {
     this.#runtime.emit(event4, data);
   }
 };
-var start = ({ init: init2, update: update3, view: view3 }, selector, flags) => {
+var start = ({ init: init2, update: update3, view: view3 }, selector2, flags) => {
   if (!is_browser()) return new Error2(new NotABrowser());
-  const root3 = selector instanceof HTMLElement ? selector : document2().querySelector(selector);
-  if (!root3) return new Error2(new ElementNotFound(selector));
+  const root3 = selector2 instanceof HTMLElement ? selector2 : document2().querySelector(selector2);
+  if (!root3) return new Error2(new ElementNotFound(selector2));
   return new Ok(new Spa(root3, init2(flags), update3, view3));
 };
 
@@ -10522,9 +10522,9 @@ var App = class extends CustomType {
   }
 };
 var ElementNotFound = class extends CustomType {
-  constructor(selector) {
+  constructor(selector2) {
     super();
-    this.selector = selector;
+    this.selector = selector2;
   }
 };
 var NotABrowser = class extends CustomType {
@@ -10532,12 +10532,12 @@ var NotABrowser = class extends CustomType {
 function application(init2, update3, view3) {
   return new App(init2, update3, view3, new$6(empty_list));
 }
-function start3(app, selector, start_args) {
+function start3(app, selector2, start_args) {
   return guard(
     !is_browser(),
     new Error2(new NotABrowser()),
     () => {
-      return start(app, selector, start_args);
+      return start(app, selector2, start_args);
     }
   );
 }
@@ -10729,16 +10729,16 @@ var Media = class extends CustomType {
   }
 };
 var Selector = class extends CustomType {
-  constructor(selector, styles) {
+  constructor(selector2, styles) {
     super();
-    this.selector = selector;
+    this.selector = selector2;
     this.styles = styles;
   }
 };
 var Combinator = class extends CustomType {
-  constructor(selector, class$5, styles) {
+  constructor(selector2, class$5, styles) {
     super();
-    this.selector = selector;
+    this.selector = selector2;
     this.class = class$5;
     this.styles = styles;
   }
@@ -10769,9 +10769,9 @@ var MediaProperty = class extends CustomType {
   }
 };
 var SelectorProperty = class extends CustomType {
-  constructor(selector, properties) {
+  constructor(selector2, properties) {
     super();
-    this.selector = selector;
+    this.selector = selector2;
     this.properties = properties;
   }
 };
@@ -10797,11 +10797,11 @@ function compute_hash(to_hash) {
 function wrap_selectors(id2, indentation, selectors) {
   return map(
     selectors,
-    (selector) => {
+    (selector2) => {
       let selector$1;
       let properties;
-      selector$1 = selector.selector;
-      properties = selector.properties;
+      selector$1 = selector2.selector;
+      properties = selector2.properties;
       return wrap_class(
         id2,
         properties,
@@ -10935,11 +10935,11 @@ function render_sheet(cache) {
   return join(_pipe$1, "\n\n");
 }
 function handle_combinator(cache, props, combinator, existing_selector) {
-  let selector;
+  let selector2;
   let class$1;
   let styles;
   if (combinator instanceof Combinator) {
-    selector = combinator.selector;
+    selector2 = combinator.selector;
     class$1 = combinator.class;
     styles = combinator.styles;
   } else {
@@ -10965,7 +10965,7 @@ function handle_combinator(cache, props, combinator, existing_selector) {
   let class$22;
   cache$1 = $[0];
   class$22 = $[1];
-  let selector$1 = existing_selector + selector + class$22.name;
+  let selector$1 = existing_selector + selector2 + class$22.name;
   let $1 = compute_properties(cache$1, styles, indentation, selector$1);
   let cache$2;
   let properties;
@@ -10989,13 +10989,13 @@ function compute_properties(cache, properties, indentation, existing_selector) {
   return fold(
     reverse(properties),
     [cache, init2],
-    (_use0, p) => {
+    (_use0, p2) => {
       let cache$1;
       let acc;
       cache$1 = _use0[0];
       acc = _use0[1];
-      if (p instanceof ClassName) {
-        let class$1 = p.class;
+      if (p2 instanceof ClassName) {
+        let class$1 = p2.class;
         let $ = map_get(cache$1.cache, class$1.as_string);
         if ($ instanceof Ok) {
           let props = $[0][1];
@@ -11014,14 +11014,14 @@ function compute_properties(cache, properties, indentation, existing_selector) {
             }
           );
         }
-      } else if (p instanceof Media) {
-        return handle_media(cache$1, acc, p);
-      } else if (p instanceof Selector) {
-        return handle_selector(cache$1, acc, p, existing_selector);
-      } else if (p instanceof Combinator) {
-        return handle_combinator(cache$1, acc, p, existing_selector);
-      } else if (p instanceof Property2) {
-        return [cache$1, handle_property(acc, p)];
+      } else if (p2 instanceof Media) {
+        return handle_media(cache$1, acc, p2);
+      } else if (p2 instanceof Selector) {
+        return handle_selector(cache$1, acc, p2, existing_selector);
+      } else if (p2 instanceof Combinator) {
+        return handle_combinator(cache$1, acc, p2, existing_selector);
+      } else if (p2 instanceof Property2) {
+        return [cache$1, handle_property(acc, p2)];
       } else {
         return [cache$1, acc];
       }
@@ -11107,12 +11107,12 @@ function handle_media(cache, props, media) {
     new Properties(props.properties, medias, props.selectors, props.indentation)
   ];
 }
-function handle_selector(cache, props, selector, existing_selector) {
+function handle_selector(cache, props, selector2, existing_selector) {
   let selector$1;
   let styles;
-  if (selector instanceof Selector) {
-    selector$1 = selector.selector;
-    styles = selector.styles;
+  if (selector2 instanceof Selector) {
+    selector$1 = selector2.selector;
+    styles = selector2.styles;
   } else {
     throw makeError(
       "let_assert",
@@ -11122,7 +11122,7 @@ function handle_selector(cache, props, selector, existing_selector) {
       "handle_selector",
       "Pattern match failed, no pattern matched the value.",
       {
-        value: selector,
+        value: selector2,
         start: 7944,
         end: 7994,
         pattern_start: 7955,
@@ -11341,6 +11341,9 @@ var Cqmin = class extends CustomType {
 function px(value) {
   return new Px(identity(value));
 }
+function rem(value) {
+  return new Rem(value);
+}
 function to_string4(size2) {
   if (size2 instanceof Px) {
     let value = size2[0];
@@ -11451,11 +11454,29 @@ function global2(name, styles) {
 function property3(field2, content) {
   return new Property2(field2, content, false);
 }
+function background_color(value) {
+  return property3("background-color", value);
+}
+function border_radius(border_radius2) {
+  return property3("border-radius", to_string4(border_radius2));
+}
+function color(color2) {
+  return property3("color", color2);
+}
 function cursor(cursor2) {
   return property3("cursor", cursor2);
 }
+function display(display2) {
+  return property3("display", display2);
+}
+function flex_wrap(flex_wrap2) {
+  return property3("flex-wrap", flex_wrap2);
+}
 function font_size(font_size2) {
   return property3("font-size", to_string4(font_size2));
+}
+function gap(gap2) {
+  return property3("gap", to_string4(gap2));
 }
 function margin(margin2) {
   return property3("margin", to_string4(margin2));
@@ -11480,6 +11501,12 @@ function padding_right(padding2) {
 }
 function padding_top(padding2) {
   return property3("padding-top", to_string4(padding2));
+}
+function selector(value, styles) {
+  return new Selector(value, styles);
+}
+function hover(styles) {
+  return selector(":hover", styles);
 }
 
 // build/dev/javascript/sketch/sketch.mjs
@@ -11644,13 +11671,201 @@ function upperCase(str) {
   return import_lodash.default.upperCase(str);
 }
 
+// node_modules/.pnpm/@tauri-apps+api@2.8.0/node_modules/@tauri-apps/api/external/tslib/tslib.es6.js
+function __classPrivateFieldGet(receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+}
+function __classPrivateFieldSet(receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+}
+
+// node_modules/.pnpm/@tauri-apps+api@2.8.0/node_modules/@tauri-apps/api/core.js
+var _Channel_onmessage;
+var _Channel_nextMessageIndex;
+var _Channel_pendingMessages;
+var _Channel_messageEndIndex;
+var _Resource_rid;
+var SERIALIZE_TO_IPC_FN = "__TAURI_TO_IPC_KEY__";
+function transformCallback(callback, once = false) {
+  return window.__TAURI_INTERNALS__.transformCallback(callback, once);
+}
+var Channel = class {
+  constructor(onmessage) {
+    _Channel_onmessage.set(this, void 0);
+    _Channel_nextMessageIndex.set(this, 0);
+    _Channel_pendingMessages.set(this, []);
+    _Channel_messageEndIndex.set(this, void 0);
+    __classPrivateFieldSet(this, _Channel_onmessage, onmessage || (() => {
+    }), "f");
+    this.id = transformCallback((rawMessage) => {
+      const index3 = rawMessage.index;
+      if ("end" in rawMessage) {
+        if (index3 == __classPrivateFieldGet(this, _Channel_nextMessageIndex, "f")) {
+          this.cleanupCallback();
+        } else {
+          __classPrivateFieldSet(this, _Channel_messageEndIndex, index3, "f");
+        }
+        return;
+      }
+      const message = rawMessage.message;
+      if (index3 == __classPrivateFieldGet(this, _Channel_nextMessageIndex, "f")) {
+        __classPrivateFieldGet(this, _Channel_onmessage, "f").call(this, message);
+        __classPrivateFieldSet(this, _Channel_nextMessageIndex, __classPrivateFieldGet(this, _Channel_nextMessageIndex, "f") + 1, "f");
+        while (__classPrivateFieldGet(this, _Channel_nextMessageIndex, "f") in __classPrivateFieldGet(this, _Channel_pendingMessages, "f")) {
+          const message2 = __classPrivateFieldGet(this, _Channel_pendingMessages, "f")[__classPrivateFieldGet(this, _Channel_nextMessageIndex, "f")];
+          __classPrivateFieldGet(this, _Channel_onmessage, "f").call(this, message2);
+          delete __classPrivateFieldGet(this, _Channel_pendingMessages, "f")[__classPrivateFieldGet(this, _Channel_nextMessageIndex, "f")];
+          __classPrivateFieldSet(this, _Channel_nextMessageIndex, __classPrivateFieldGet(this, _Channel_nextMessageIndex, "f") + 1, "f");
+        }
+        if (__classPrivateFieldGet(this, _Channel_nextMessageIndex, "f") === __classPrivateFieldGet(this, _Channel_messageEndIndex, "f")) {
+          this.cleanupCallback();
+        }
+      } else {
+        __classPrivateFieldGet(this, _Channel_pendingMessages, "f")[index3] = message;
+      }
+    });
+  }
+  cleanupCallback() {
+    window.__TAURI_INTERNALS__.unregisterCallback(this.id);
+  }
+  set onmessage(handler) {
+    __classPrivateFieldSet(this, _Channel_onmessage, handler, "f");
+  }
+  get onmessage() {
+    return __classPrivateFieldGet(this, _Channel_onmessage, "f");
+  }
+  [(_Channel_onmessage = /* @__PURE__ */ new WeakMap(), _Channel_nextMessageIndex = /* @__PURE__ */ new WeakMap(), _Channel_pendingMessages = /* @__PURE__ */ new WeakMap(), _Channel_messageEndIndex = /* @__PURE__ */ new WeakMap(), SERIALIZE_TO_IPC_FN)]() {
+    return `__CHANNEL__:${this.id}`;
+  }
+  toJSON() {
+    return this[SERIALIZE_TO_IPC_FN]();
+  }
+};
+async function invoke(cmd, args = {}, options) {
+  return window.__TAURI_INTERNALS__.invoke(cmd, args, options);
+}
+_Resource_rid = /* @__PURE__ */ new WeakMap();
+
+// node_modules/.pnpm/@tauri-apps+plugin-notification@2.3.1/node_modules/@tauri-apps/plugin-notification/dist-js/index.js
+var ScheduleEvery;
+(function(ScheduleEvery2) {
+  ScheduleEvery2["Year"] = "year";
+  ScheduleEvery2["Month"] = "month";
+  ScheduleEvery2["TwoWeeks"] = "twoWeeks";
+  ScheduleEvery2["Week"] = "week";
+  ScheduleEvery2["Day"] = "day";
+  ScheduleEvery2["Hour"] = "hour";
+  ScheduleEvery2["Minute"] = "minute";
+  ScheduleEvery2["Second"] = "second";
+})(ScheduleEvery || (ScheduleEvery = {}));
+var Importance;
+(function(Importance2) {
+  Importance2[Importance2["None"] = 0] = "None";
+  Importance2[Importance2["Min"] = 1] = "Min";
+  Importance2[Importance2["Low"] = 2] = "Low";
+  Importance2[Importance2["Default"] = 3] = "Default";
+  Importance2[Importance2["High"] = 4] = "High";
+})(Importance || (Importance = {}));
+var Visibility;
+(function(Visibility2) {
+  Visibility2[Visibility2["Secret"] = -1] = "Secret";
+  Visibility2[Visibility2["Private"] = 0] = "Private";
+  Visibility2[Visibility2["Public"] = 1] = "Public";
+})(Visibility || (Visibility = {}));
+async function isPermissionGranted() {
+  if (window.Notification.permission !== "default") {
+    return await Promise.resolve(window.Notification.permission === "granted");
+  }
+  return await invoke("plugin:notification|is_permission_granted");
+}
+async function requestPermission() {
+  return await window.Notification.requestPermission();
+}
+function sendNotification(options) {
+  if (typeof options === "string") {
+    new window.Notification(options);
+  } else {
+    new window.Notification(options.title, options);
+  }
+}
+
+// build/dev/javascript/tauri_lustre_app/notification_ffi.mjs
+async function init_notifications() {
+  try {
+    console.log("\u{1F514} Initializing notifications...");
+    let permissionGranted = await isPermissionGranted();
+    console.log("\u{1F4CB} Initial permission status:", permissionGranted);
+    if (!permissionGranted) {
+      console.log("\u{1F510} Requesting notification permission...");
+      const permission = await requestPermission();
+      permissionGranted = permission === "granted";
+      console.log("\u{1F4CB} Permission after request:", permissionGranted);
+    }
+    if (permissionGranted) {
+      console.log("\u2705 Sending welcome notification...");
+      await sendNotification({
+        title: "\u{1F680} Gleam + Tauri App",
+        body: "Notification system initialized successfully!"
+      });
+    } else {
+      console.log("\u274C Notification permission denied");
+    }
+  } catch (error) {
+    console.error("\u{1F4A5} Error initializing notifications:", error);
+  }
+}
+async function send_notification(title, body) {
+  try {
+    let permissionGranted = await isPermissionGranted();
+    if (!permissionGranted) {
+      const permission = await requestPermission();
+      permissionGranted = permission === "granted";
+    }
+    if (permissionGranted) {
+      await sendNotification({ title, body });
+      console.log(`\u{1F4E8} Notification sent: ${title} - ${body}`);
+      return true;
+    }
+    console.log("\u{1F6AB} Notification permission denied");
+    return false;
+  } catch (error) {
+    console.error("\u{1F4A5} Error sending notification:", error);
+    return false;
+  }
+}
+async function send_test_now() {
+  console.log("\u{1F9EA} Sending immediate test notification...");
+  const timestamp = (/* @__PURE__ */ new Date()).toLocaleTimeString();
+  return await send_notification(
+    "\u26A1 Instant Test",
+    `Test notification sent at ${timestamp}`
+  );
+}
+function send_timed_notification(delayMs, callback) {
+  console.log(`\u23F0 Scheduling notification for ${delayMs}ms...`);
+  setTimeout(async () => {
+    console.log("\u23F0 Sending timed notification...");
+    const timestamp = (/* @__PURE__ */ new Date()).toLocaleTimeString();
+    const success2 = await send_notification(
+      "\u23F0 Timed Notification",
+      `This notification was scheduled and sent at ${timestamp}`
+    );
+    callback(success2);
+  }, delayMs);
+}
+
 // build/dev/javascript/tauri_lustre_app/tauri_ffi.mjs
 var isTauri = typeof window !== "undefined" && window.__TAURI_INTERNALS__;
 var gleamCallback = null;
 function setCallback(cb) {
   gleamCallback = cb;
 }
-async function invoke(cmd, args) {
+async function invoke2(cmd, args) {
   try {
     if (typeof window !== "undefined" && window.__TAURI_INTERNALS__) {
       const result = await window.__TAURI_INTERNALS__.invoke(cmd, args);
@@ -11673,10 +11888,12 @@ async function invoke(cmd, args) {
 
 // build/dev/javascript/tauri_lustre_app/types.mjs
 var Model = class extends CustomType {
-  constructor(greeting, loading) {
+  constructor(greeting, loading, notification_status, notification_count) {
     super();
     this.greeting = greeting;
     this.loading = loading;
+    this.notification_status = notification_status;
+    this.notification_count = notification_count;
   }
 };
 var CallCommand = class extends CustomType {
@@ -11691,6 +11908,16 @@ var CommandResult = class extends CustomType {
     this[0] = $0;
     this[1] = $1;
   }
+};
+var SendTestNotification = class extends CustomType {
+};
+var NotificationSent = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
+var SendTimedNotification = class extends CustomType {
 };
 
 // build/dev/javascript/lustre/lustre/event.mjs
@@ -11777,6 +12004,12 @@ function div(class$5, attributes, children) {
 function h1(class$5, attributes, children) {
   return element4("h1", class$5, attributes, children);
 }
+function h2(class$5, attributes, children) {
+  return element4("h2", class$5, attributes, children);
+}
+function p(class$5, attributes, children) {
+  return element4("p", class$5, attributes, children);
+}
 
 // build/dev/javascript/tauri_lustre_app/styles.mjs
 function container_style() {
@@ -11811,6 +12044,59 @@ function button_loading_style() {
     ])
   );
 }
+function section_style() {
+  return class$4(
+    toList([
+      margin_bottom(px(30)),
+      padding(px(20)),
+      border_radius(px(8)),
+      background_color("#fafafa")
+    ])
+  );
+}
+function status_style() {
+  return class$4(
+    toList([
+      padding(px(10)),
+      margin_bottom(px(15)),
+      background_color("#e7f3ff"),
+      border_radius(px(6))
+    ])
+  );
+}
+function notification_button_style() {
+  return class$4(
+    toList([
+      padding(px(12)),
+      margin(px(5)),
+      background_color("#28a745"),
+      color("white"),
+      border_radius(px(6)),
+      cursor("pointer"),
+      font_size(rem(1)),
+      hover(toList([background_color("#1e7e34")]))
+    ])
+  );
+}
+function notification_button_secondary_style() {
+  return class$4(
+    toList([
+      padding(px(12)),
+      margin(px(5)),
+      background_color("#ffc107"),
+      color("#212529"),
+      border_radius(px(6)),
+      cursor("pointer"),
+      font_size(rem(1)),
+      hover(toList([background_color("#e0a800")]))
+    ])
+  );
+}
+function button_group_style() {
+  return class$4(
+    toList([display("flex"), flex_wrap("wrap"), gap(px(10))])
+  );
+}
 
 // build/dev/javascript/tauri_lustre_app/view.mjs
 function view(model, stylesheet2) {
@@ -11825,36 +12111,96 @@ function view(model, stylesheet2) {
           h1(
             class$4(toList([])),
             toList([]),
-            toList([text4("Lustre + Tauri Example")])
+            toList([text4("Lustre + Tauri + Notifications")])
           ),
           div(
-            greeting_style(),
+            section_style(),
             toList([]),
-            toList([text4(model.greeting)])
-          ),
-          button(
-            (() => {
-              let $ = model.loading;
-              if ($) {
-                return button_loading_style();
-              } else {
-                return button_style();
-              }
-            })(),
             toList([
-              on_click(new CallCommand("greet")),
-              disabled(model.loading)
-            ]),
-            toList([
-              text4(
+              h2(
+                class$4(toList([])),
+                toList([]),
+                toList([text4("Tauri Commands")])
+              ),
+              div(
+                greeting_style(),
+                toList([]),
+                toList([text4(model.greeting)])
+              ),
+              button(
                 (() => {
                   let $ = model.loading;
                   if ($) {
-                    return "Loading...";
+                    return button_loading_style();
                   } else {
-                    return "Run Tauri Command!";
+                    return button_style();
                   }
-                })()
+                })(),
+                toList([
+                  on_click(new CallCommand("greet")),
+                  disabled(model.loading)
+                ]),
+                toList([
+                  text4(
+                    (() => {
+                      let $ = model.loading;
+                      if ($) {
+                        return "Loading...";
+                      } else {
+                        return "Run Tauri Command!";
+                      }
+                    })()
+                  )
+                ])
+              )
+            ])
+          ),
+          div(
+            section_style(),
+            toList([]),
+            toList([
+              h2(
+                class$4(toList([])),
+                toList([]),
+                toList([text4("Notification Tests")])
+              ),
+              div(
+                status_style(),
+                toList([]),
+                toList([
+                  p(
+                    class$4(toList([])),
+                    toList([]),
+                    toList([text4("Status: " + model.notification_status)])
+                  ),
+                  p(
+                    class$4(toList([])),
+                    toList([]),
+                    toList([
+                      text4(
+                        "Notifications sent: " + to_string(
+                          model.notification_count
+                        )
+                      )
+                    ])
+                  )
+                ])
+              ),
+              div(
+                button_group_style(),
+                toList([]),
+                toList([
+                  button(
+                    notification_button_style(),
+                    toList([on_click(new SendTestNotification())]),
+                    toList([text4("Send Instant Notification")])
+                  ),
+                  button(
+                    notification_button_secondary_style(),
+                    toList([on_click(new SendTimedNotification())]),
+                    toList([text4("Send Timed Notification (3s)")])
+                  )
+                ])
               )
             ])
           )
@@ -11866,7 +12212,16 @@ function view(model, stylesheet2) {
 
 // build/dev/javascript/tauri_lustre_app/app.mjs
 function init(_2) {
-  return [new Model("Click the button to greet!", false), none()];
+  init_notifications();
+  return [
+    new Model(
+      "Click the button to greet!",
+      false,
+      "Notifications initialized",
+      0
+    ),
+    none()
+  ];
 }
 function update2(model, msg) {
   if (msg instanceof CallCommand) {
@@ -11879,16 +12234,85 @@ function update2(model, msg) {
             return dispatch(new CommandResult(cmd2, result));
           }
         );
-        return invoke(cmd, args);
+        return invoke2(cmd, args);
       }
     );
-    return [new Model(model.greeting, true), effect];
-  } else {
+    return [
+      new Model(
+        model.greeting,
+        true,
+        model.notification_status,
+        model.notification_count
+      ),
+      effect
+    ];
+  } else if (msg instanceof CommandResult) {
     let cmd = msg[0];
     let result = msg[1];
     return [
-      new Model("Command " + cmd + " \u2192 " + result, false),
+      new Model(
+        "Command " + cmd + " \u2192 " + result,
+        false,
+        model.notification_status,
+        model.notification_count
+      ),
       none()
+    ];
+  } else if (msg instanceof SendTestNotification) {
+    let effect = from(
+      (dispatch) => {
+        let success2 = send_test_now();
+        return dispatch(new NotificationSent(success2));
+      }
+    );
+    return [
+      new Model(
+        model.greeting,
+        model.loading,
+        "Sending notification...",
+        model.notification_count
+      ),
+      effect
+    ];
+  } else if (msg instanceof NotificationSent) {
+    let success2 = msg[0];
+    let _block;
+    if (success2) {
+      _block = model.notification_count + 1;
+    } else {
+      _block = model.notification_count;
+    }
+    let new_count = _block;
+    let _block$1;
+    if (success2) {
+      _block$1 = "Notification sent successfully!";
+    } else {
+      _block$1 = "Failed to send notification";
+    }
+    let status = _block$1;
+    return [
+      new Model(model.greeting, model.loading, status, new_count),
+      none()
+    ];
+  } else {
+    let effect = from(
+      (dispatch) => {
+        return send_timed_notification(
+          3e3,
+          (success2) => {
+            return dispatch(new NotificationSent(success2));
+          }
+        );
+      }
+    );
+    return [
+      new Model(
+        model.greeting,
+        model.loading,
+        "Timed notification scheduled (3s)...",
+        model.notification_count
+      ),
+      effect
     ];
   }
 }
