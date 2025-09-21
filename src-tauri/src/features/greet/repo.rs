@@ -1,67 +1,41 @@
-use super::model::Greet;
-use std::collections::HashMap;
+use rusqlite::{params, Connection};
 use std::sync::{Arc, Mutex};
 
 pub trait GreetRepository {
-    fn save(&self, greet: Greet) -> Result<Greet, String>;
-    fn find_by_id(&self, id: u32) -> Result<Option<Greet>, String>;
-    fn find_by_name(&self, name: &str) -> Result<Option<Greet>, String>;
-    fn find_all(&self) -> Result<Vec<Greet>, String>;
-    fn delete(&self, id: u32) -> Result<bool, String>;
-    fn get_next_id(&self) -> u32;
+    fn create_greeting(&self, name: &str, message: &str) -> Result<i64, rusqlite::Error>;
+    fn get_greeting_by_name(&self, name: &str) -> Result<Option<String>, rusqlite::Error>;
 }
 
 #[derive(Debug, Clone)]
 pub struct GreetRepo {
-    store: Arc<Mutex<HashMap<u32, Greet>>>,
-    next_id: Arc<Mutex<u32>>,
+    connection: Arc<Mutex<Connection>>,
 }
 
 impl GreetRepo {
-    pub fn new() -> Self {
-        Self {
-            store: Arc::new(Mutex::new(HashMap::new())),
-            next_id: Arc::new(Mutex::new(1)),
-        }
+    pub fn new(connection: Arc<Mutex<Connection>>) -> Self {
+        Self { connection }
     }
 }
 
 impl GreetRepository for GreetRepo {
-    fn save(&self, mut greet: Greet) -> Result<Greet, String> {
-        let mut store = self.store.lock().map_err(|_| "Failed to acquire lock")?;
+    fn create_greeting(&self, name: &str, message: &str) -> Result<i64, rusqlite::Error> {
+        let conn = self.connection.lock().unwrap();
+        conn.execute(
+            "INSERT INTO greetings (name, message) VALUES (?1, ?2)",
+            params![name, message],
+        )?;
+        Ok(conn.last_insert_rowid())
+    }
 
-        if greet.id == 0 {
-            greet.id = self.get_next_id();
+    fn get_greeting_by_name(&self, name: &str) -> Result<Option<String>, rusqlite::Error> {
+        let conn = self.connection.lock().unwrap();
+        let mut stmt = conn.prepare("SELECT message FROM greetings WHERE name = ?1 LIMIT 1")?;
+
+        let mut rows = stmt.query_map(params![name], |row| Ok(row.get::<_, String>(0)?))?;
+
+        match rows.next() {
+            Some(row) => Ok(Some(row?)),
+            None => Ok(None),
         }
-
-        store.insert(greet.id, greet.clone());
-        Ok(greet)
-    }
-
-    fn find_by_id(&self, id: u32) -> Result<Option<Greet>, String> {
-        let store = self.store.lock().map_err(|_| "Failed to acquire lock")?;
-        Ok(store.get(&id).cloned())
-    }
-
-    fn find_by_name(&self, name: &str) -> Result<Option<Greet>, String> {
-        let store = self.store.lock().map_err(|_| "Failed to acquire lock")?;
-        Ok(store.values().find(|g| g.name == name).cloned())
-    }
-
-    fn find_all(&self) -> Result<Vec<Greet>, String> {
-        let store = self.store.lock().map_err(|_| "Failed to acquire lock")?;
-        Ok(store.values().cloned().collect())
-    }
-
-    fn delete(&self, id: u32) -> Result<bool, String> {
-        let mut store = self.store.lock().map_err(|_| "Failed to acquire lock")?;
-        Ok(store.remove(&id).is_some())
-    }
-
-    fn get_next_id(&self) -> u32 {
-        let mut next_id = self.next_id.lock().unwrap();
-        let id = *next_id;
-        *next_id += 1;
-        id
     }
 }

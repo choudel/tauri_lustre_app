@@ -2,7 +2,7 @@ import gleam/dynamic
 import gleam/dynamic/decode
 import lustre/effect
 import gleam/json
-import types.{type Model, type Msg, Model, CallCommand, CommandResult, SendTestNotification, NotificationSent, SendTimedNotification, CreateGreet}
+import types.{type Model, type Msg, Model, CallCommand, CommandResult,UpdateName, SendTestNotification, NotificationSent, SendTimedNotification, CreateGreet}
 import ffi
 import view
 
@@ -29,7 +29,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
     CallCommand(cmd) -> {
       let args = case cmd {
         "greet" -> json.object([#("name", json.string("Chouaib"))])
-        "create_greet" -> json.object([#("name", json.string("Chouaib"))])
+        "create_greet" -> json.object([#("name", json.string("Chouaib1"))])
         _ -> json.object([])
       }
       
@@ -157,6 +157,18 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
         notification_count: model.notification_count,
       ), effect)
     }
+    UpdateName(new_name) ->{
+      #(
+        Model(
+          greeting: model.greeting,
+          name: new_name,  
+          loading: model.loading,
+          notification_status: model.notification_status,
+          notification_count: model.notification_count,
+        ),
+        effect.none()
+      )
+      }
   }
 }
 

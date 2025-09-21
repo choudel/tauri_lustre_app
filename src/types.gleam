@@ -13,6 +13,7 @@ pub type Model {
 pub type Msg {
   CallCommand(String)
   CommandResult(String, dynamic.Dynamic)
+  UpdateName(String)
   CreateGreet
   SendTestNotification
   NotificationSent(Bool)

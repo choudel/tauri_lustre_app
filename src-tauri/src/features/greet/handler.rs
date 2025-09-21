@@ -1,6 +1,5 @@
 use super::model::{CreateGreetRequest, Greet, GreetResponse};
 use crate::unit_of_work::UnitOfWork;
-
 pub struct GreetHandler;
 
 impl GreetHandler {
@@ -14,46 +13,47 @@ impl GreetHandler {
         request: CreateGreetRequest,
     ) -> Result<GreetResponse, String> {
         // Check if greet already exists for this name
-        if let Ok(Some(existing)) = uow.greet_repo().find_by_name(&request.name) {
-            return Ok(GreetResponse {
-                message: existing.message.clone(),
-                greet: Some(existing),
-            });
+        match uow.greet_repo().get_greeting_by_name(&request.name) {
+            Ok(Some(existing_message)) => {
+                // Return existing greeting
+                let greet = Greet::new(0, request.name.clone()); // ID is not returned from DB, using 0
+                Ok(GreetResponse {
+                    message: existing_message,
+                    greet: Some(greet),
+                })
+            }
+            Ok(None) => {
+                // Create new greet
+                let message = format!("Hello, {}!", request.name); // Generate message
+
+                match uow.greet_repo().create_greeting(&request.name, &message) {
+                    Ok(id) => {
+                        let greet = Greet::new(id as u32, request.name.clone());
+                        Ok(GreetResponse {
+                            message: message.clone(),
+                            greet: Some(greet),
+                        })
+                    }
+                    Err(e) => Err(format!("Failed to create greeting: {}", e)),
+                }
+            }
+            Err(e) => Err(format!("Failed to check existing greeting: {}", e)),
         }
-
-        // Create new greet
-        let greet = Greet::new(0, request.name); // ID will be auto-assigned by repo
-        let saved_greet = uow.greet_repo().save(greet)?;
-
-        Ok(GreetResponse {
-            message: saved_greet.message.clone(),
-            greet: Some(saved_greet),
-        })
     }
 
-    pub fn get_greet_by_name(&self, uow: &UnitOfWork, name: &str) -> Result<Option<Greet>, String> {
-        uow.greet_repo().find_by_name(name)
-    }
-
-    pub fn get_greet_by_id(&self, uow: &UnitOfWork, id: u32) -> Result<Option<Greet>, String> {
-        uow.greet_repo().find_by_id(id)
-    }
-
-    pub fn get_all_greets(&self, uow: &UnitOfWork) -> Result<Vec<Greet>, String> {
-        uow.greet_repo().find_all()
-    }
-
-    pub fn delete_greet(&self, uow: &UnitOfWork, id: u32) -> Result<bool, String> {
-        uow.greet_repo().delete(id)
-    }
-
-    // Simple greet function for backward compatibility
+    // Optional: Simple greet method for the basic greet command
     pub fn simple_greet(&self, uow: &UnitOfWork, name: &str) -> Result<String, String> {
-        let request = CreateGreetRequest {
-            name: name.to_string(),
-        };
-
-        let response = self.create_greet(uow, request)?;
-        Ok(response.message)
+        match uow.greet_repo().get_greeting_by_name(name) {
+            Ok(Some(message)) => Ok(message),
+            Ok(None) => {
+                // Create a simple greeting if none exists
+                let message = format!("Hello, {}!", name);
+                match uow.greet_repo().create_greeting(name, &message) {
+                    Ok(_) => Ok(message),
+                    Err(e) => Err(format!("Failed to create greeting: {}", e)),
+                }
+            }
+            Err(e) => Err(format!("Database error: {}", e)),
+        }
     }
 }

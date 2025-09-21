@@ -1,24 +1,26 @@
-use crate::features::greet::GreetRepo;
-use std::sync::OnceLock;
+use rusqlite::Connection;
+
+use crate::features::greet::{GreetRepo, GreetRepository};
+use std::sync::{Arc, Mutex, OnceLock};
 
 pub struct LazyRepo {
     greet_repo: OnceLock<GreetRepo>,
 }
 
 impl LazyRepo {
-    pub fn new() -> Self {
+    pub fn new(connection: Arc<Mutex<Connection>>) -> Self {
         Self {
-            greet_repo: OnceLock::new(),
+            greet_repo: OnceLock::from(GreetRepo::new(connection)),
         }
     }
 
-    pub fn greet_repo(&self) -> &GreetRepo {
-        self.greet_repo.get_or_init(|| GreetRepo::new())
+    pub fn greet_repo(&self) -> &dyn GreetRepository {
+        self.greet_repo.get().unwrap()
+    }
+
+    pub fn greet_repo_concrete(&self) -> &GreetRepo {
+        &self.greet_repo.get().unwrap()
     }
 }
 
-impl Default for LazyRepo {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+// Remove Default implementation as it requires a connection parameter

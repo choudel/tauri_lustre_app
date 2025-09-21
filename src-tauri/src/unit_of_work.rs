@@ -1,18 +1,26 @@
+use rusqlite::Connection;
+
+use crate::connection::MyConnection;
 use crate::features::greet::{GreetRepo, GreetRepository};
 use crate::lazy_repo::LazyRepo;
-use std::sync::{Arc, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
 
-static GLOBAL_LAZY_REPO: OnceLock<Arc<LazyRepo>> = OnceLock::new();
+static GLOBAL_CONNECTION: OnceLock<Arc<Mutex<Connection>>> = OnceLock::new();
 
 pub struct UnitOfWork {
-    lazy_repo: Arc<LazyRepo>,
+    lazy_repo: LazyRepo,
 }
 
 impl UnitOfWork {
     pub fn new() -> Self {
-        let lazy_repo = GLOBAL_LAZY_REPO
-            .get_or_init(|| Arc::new(LazyRepo::new()))
+        let connection = GLOBAL_CONNECTION
+            .get_or_init(|| {
+                let db_conn = MyConnection::new().unwrap();
+                db_conn.get_connection()
+            })
             .clone();
+
+        let lazy_repo = LazyRepo::new(connection);
 
         Self { lazy_repo }
     }
@@ -21,9 +29,8 @@ impl UnitOfWork {
         self.lazy_repo.greet_repo()
     }
 
-    // Method to get the concrete type if needed
     pub fn greet_repo_concrete(&self) -> &GreetRepo {
-        self.lazy_repo.greet_repo()
+        self.lazy_repo.greet_repo_concrete()
     }
 }
 

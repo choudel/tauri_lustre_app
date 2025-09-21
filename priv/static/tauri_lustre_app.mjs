@@ -7536,6 +7536,38 @@ function index3(loop$path, loop$position, loop$inner, loop$data, loop$handle_mis
     }
   }
 }
+function subfield(field_path, field_decoder, next) {
+  return new Decoder(
+    (data) => {
+      let $ = index3(
+        field_path,
+        toList([]),
+        field_decoder.function,
+        data,
+        (data2, position) => {
+          let $12 = field_decoder.function(data2);
+          let default$;
+          default$ = $12[0];
+          let _pipe = [
+            default$,
+            toList([new DecodeError("Field", "Nothing", toList([]))])
+          ];
+          return push_path(_pipe, reverse(position));
+        }
+      );
+      let out;
+      let errors1;
+      out = $[0];
+      errors1 = $[1];
+      let $1 = next(out).function(data);
+      let out$1;
+      let errors2;
+      out$1 = $1[0];
+      errors2 = $1[1];
+      return [out$1, append(errors1, errors2)];
+    }
+  );
+}
 function at(path, inner) {
   return new Decoder(
     (data) => {
@@ -12170,6 +12202,12 @@ var CommandResult = class extends CustomType {
     this[1] = $1;
   }
 };
+var UpdateName = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
 var CreateGreet = class extends CustomType {
 };
 var SendTestNotification = class extends CustomType {
@@ -12219,6 +12257,18 @@ function on(name, handler) {
 }
 function on_click(msg) {
   return on("click", success(msg));
+}
+function on_input(msg) {
+  return on(
+    "input",
+    subfield(
+      toList(["target", "value"]),
+      string2,
+      (value2) => {
+        return success(msg(value2));
+      }
+    )
+  );
 }
 
 // build/dev/javascript/sketch_lustre/sketch/lustre/element.mjs
@@ -12433,7 +12483,13 @@ function view(model, stylesheet2) {
               ),
               input(
                 input_style(),
-                toList([readonly(true), value(model.name)])
+                toList([
+                  readonly(false),
+                  value(model.name),
+                  on_input((var0) => {
+                    return new UpdateName(var0);
+                  })
+                ])
               ),
               button(
                 (() => {
@@ -12539,7 +12595,7 @@ function update2(model, msg) {
     if (cmd === "greet") {
       _block = object2(toList([["name", string3("Chouaib")]]));
     } else if (cmd === "create_greet") {
-      _block = object2(toList([["name", string3("Chouaib")]]));
+      _block = object2(toList([["name", string3("Chouaib1")]]));
     } else {
       _block = object2(toList([]));
     }
@@ -12602,6 +12658,18 @@ function update2(model, msg) {
         "Command " + cmd + " \u2192 " + result,
         model.name,
         false,
+        model.notification_status,
+        model.notification_count
+      ),
+      none()
+    ];
+  } else if (msg instanceof UpdateName) {
+    let new_name = msg[0];
+    return [
+      new Model(
+        model.greeting,
+        new_name,
+        model.loading,
         model.notification_status,
         model.notification_count
       ),
