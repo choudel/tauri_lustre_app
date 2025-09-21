@@ -1,6 +1,8 @@
+import gleam/dynamic
+import gleam/dynamic/decode
 import lustre/effect
 import gleam/json
-import types.{type Model, type Msg, Model, CallCommand, CommandResult, SendTestNotification, NotificationSent, SendTimedNotification}
+import types.{type Model, type Msg, Model, CallCommand, CommandResult, SendTestNotification, NotificationSent, SendTimedNotification, CreateGreet}
 import ffi
 import view
 
@@ -12,6 +14,7 @@ pub fn init(_flags: Nil) -> #(Model, effect.Effect(Msg)) {
   #(
     Model(
       greeting: "Click the button to greet!", 
+      name: "Chouaib",
       loading: False,
       notification_status: "Notifications initialized",
       notification_count: 0,
@@ -24,11 +27,15 @@ pub fn init(_flags: Nil) -> #(Model, effect.Effect(Msg)) {
 pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
   case msg {
     CallCommand(cmd) -> {
-      let args = json.object([#("name", json.string("Chouaib"))])
+      let args = case cmd {
+        "greet" -> json.object([#("name", json.string("Chouaib"))])
+        "create_greet" -> json.object([#("name", json.string("Chouaib"))])
+        _ -> json.object([])
+      }
       
       // Side effect: call Tauri invoke
       let effect = effect.from(fn(dispatch: fn(Msg) -> Nil) -> Nil {
-        ffi.tauri_set_callback(fn(cmd: String, result: String) -> Nil {
+        ffi.tauri_set_callback(fn(cmd: String, result: dynamic.Dynamic) -> Nil {
           dispatch(CommandResult(cmd, result))
         })
         ffi.tauri_invoke(cmd, args)
@@ -36,15 +43,42 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
       
       #(Model(
         greeting: model.greeting, 
+        name: model.name,
         loading: True,
         notification_status: model.notification_status,
         notification_count: model.notification_count,
       ), effect)
     }
     
-    CommandResult(cmd, result) -> {
+    CommandResult(cmd, dynamic_result) -> {
+      // Handle different result types based on the command
+      let result = case cmd {
+        "greet" -> {
+          // For greet command, expect a string
+          case decode.run(dynamic_result, decode.string) {
+            Ok(message) -> message
+            Error(_) -> "Error: Expected string result"
+          }
+        }
+        "create_greet" -> {
+          // For create_greet command, handle both success and error cases
+          case decode.run(dynamic_result, decode.string) {
+            Ok(error_message) -> "Error: " <> error_message
+            Error(_) -> {
+              // Try to decode as a success object
+              case decode.run(dynamic_result, decode.at(["message"], decode.string)) {
+                Ok(message) -> message
+                Error(_) -> "Error: Unexpected result format"
+              }
+            }
+          }
+        }
+        _ -> "Unknown command: " <> cmd
+      }
+      
       #(Model(
-        greeting: "Command " <> cmd <> " → " <> result, 
+        greeting: "Command " <> cmd <> " → " <> result,
+        name: model.name, 
         loading: False,
         notification_status: model.notification_status,
         notification_count: model.notification_count,
@@ -60,6 +94,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
       
       #(Model(
         greeting: model.greeting,
+        name: model.name,
         loading: model.loading,
         notification_status: "Sending notification...",
         notification_count: model.notification_count,
@@ -79,6 +114,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
       
       #(Model(
         greeting: model.greeting,
+        name: model.name,
         loading: model.loading,
         notification_status: status,
         notification_count: new_count,
@@ -95,8 +131,29 @@ pub fn update(model: Model, msg: Msg) -> #(Model, effect.Effect(Msg)) {
       
       #(Model(
         greeting: model.greeting,
+        name: model.name,
         loading: model.loading,
         notification_status: "Timed notification scheduled (3s)...",
+        notification_count: model.notification_count,
+      ), effect)
+    }
+    
+     CreateGreet -> {
+      let args = json.object([#("name", json.string(model.name))])
+      
+      // Side effect: call create_greet Tauri command
+      let effect = effect.from(fn(dispatch: fn(Msg) -> Nil) -> Nil {
+        ffi.tauri_set_callback(fn(cmd: String, result: dynamic.Dynamic) -> Nil {
+          dispatch(CommandResult(cmd,result))
+        })
+        ffi.tauri_invoke("create_greet", args)
+      })
+      
+      #(Model(
+        greeting: model.greeting,
+        name: model.name,
+        loading: True,
+        notification_status: model.notification_status,
         notification_count: model.notification_count,
       ), effect)
     }

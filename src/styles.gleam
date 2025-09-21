@@ -13,7 +13,16 @@ pub fn greeting_style() {
     css.margin_bottom(px(20)),
   ])
 }
-
+pub fn input_style() {
+  css.class([
+    css.padding(px(10)),
+    css.font_size(px(16)),
+    css.margin_right(px(10)),
+    css.border_radius(px(4)),
+    css.border("1px solid #ccc"),
+    css.width(px(300)),
+  ])
+}
 pub fn button_style() {
   css.class([
     css.padding_top(px(10)),

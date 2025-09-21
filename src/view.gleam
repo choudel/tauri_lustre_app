@@ -5,7 +5,7 @@ import lustre/event
 import lustre/attribute
 import sketch/lustre as sketch_lustre
 import sketch/css
-import types.{type Model, type Msg, CallCommand, SendTestNotification, SendTimedNotification}
+import types.{type Model, type Msg, CallCommand,CreateGreet, SendTestNotification, SendTimedNotification}
 import styles
 
 pub fn view(model: Model, stylesheet) -> Element(Msg) {
@@ -32,7 +32,25 @@ pub fn view(model: Model, stylesheet) -> Element(Msg) {
           True -> "Loading..."
           False -> "Run Tauri Command!"
         })]
-      )
+      ),
+      html.input(
+        styles.input_style(),
+        [attribute.readonly(True), attribute.value(model.name)]
+      ),
+      html.button(
+        case model.loading {
+          True -> styles.button_loading_style()
+          False -> styles.button_style()
+        },
+        [
+          event.on_click(CreateGreet),
+          attribute.disabled(model.loading),
+        ],
+        [html.text(case model.loading {
+          True -> "Loading..."
+          False -> "Create greeting!"
+        })]
+      ),
     ]),
     
     // Notifications section

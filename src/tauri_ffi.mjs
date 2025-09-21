@@ -9,26 +9,30 @@ export function setCallback(cb) {
 
 export async function invoke(cmd, args) {
   try {
+    let result;
     // Check if we're in Tauri environment and use the global API
     if (typeof window !== "undefined" && window.__TAURI_INTERNALS__) {
       // Use the internal invoke method directly
-      const result = await window.__TAURI_INTERNALS__.invoke(cmd, args);
-      if (gleamCallback) gleamCallback(cmd, result);
-      return result;
+      result = await window.__TAURI_INTERNALS__.invoke(cmd, args);
+    } else if (typeof window !== "undefined" && window.__TAURI__) {
+      // If global internals not available, try the public API
+      result = await window.__TAURI__.core.invoke(cmd, args);
+    } else {
+      throw new Error("Tauri globals not found");
     }
 
-    // If global internals not available, try the public API
-    if (typeof window !== "undefined" && window.__TAURI__) {
-      const result = await window.__TAURI__.core.invoke(cmd, args);
-      if (gleamCallback) gleamCallback(cmd, result);
-      return result;
-    }
-
-    throw new Error("Tauri globals not found");
-  } catch (error) {
-    console.log("Tauri not available, using simulation:", error.message);
-    const result = `Simulated result for ${cmd}`;
+    // Pass the raw result to Gleam
     if (gleamCallback) gleamCallback(cmd, result);
     return result;
+  } catch (error) {
+    console.log("Tauri not available, using simulation:", error.message);
+    // Create a simulated response for testing
+    const simulatedResult =
+      cmd === "create_greet"
+        ? { id: 1, name: "Chouaib", message: "Hello, Chouaib!" }
+        : `Hello, ${args.name || "World"}!`;
+
+    if (gleamCallback) gleamCallback(cmd, simulatedResult);
+    return simulatedResult;
   }
 }

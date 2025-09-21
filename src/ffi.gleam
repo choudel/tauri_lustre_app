@@ -1,3 +1,4 @@
+import gleam/dynamic
 import gleam/json
 
 // Tauri FFI
@@ -5,7 +6,7 @@ import gleam/json
 pub fn tauri_invoke(cmd: String, args: json.Json) -> Nil
 
 @external(javascript, "./tauri_ffi.mjs", "setCallback")
-pub fn tauri_set_callback(cb: fn(String, String) -> Nil) -> Nil
+pub fn tauri_set_callback(cb: fn(String, dynamic.Dynamic) -> Nil) -> Nil
 
 // Lodash FFI
 @external(javascript, "./lodash_ffi.mjs", "upperCase")
