@@ -1,5 +1,8 @@
-use super::model::{CreateGreetRequest, Greet, GreetResponse};
-use crate::unit_of_work::UnitOfWork;
+use super::*;
+use crate::{
+    features::greet::model::{CreateGreetRequest, Greet, GreetResponse},
+    unit_of_work::UnitOfWork,
+};
 pub struct GreetHandler;
 
 impl GreetHandler {
@@ -11,49 +14,53 @@ impl GreetHandler {
         &self,
         uow: &UnitOfWork,
         request: CreateGreetRequest,
-    ) -> Result<GreetResponse, String> {
+    ) -> AppResult<GreetResponse> {
+        // Validate input
+        if request.name.trim().is_empty() {
+            return Err(AppError::validation("Name cannot be empty"));
+        }
+
+        if request.name.len() > 100 {
+            return Err(AppError::validation("Name cannot exceed 100 characters"));
+        }
+
         // Check if greet already exists for this name
-        match uow.greet_repo().get_greeting_by_name(&request.name) {
-            Ok(Some(existing_message)) => {
+        match uow.greet_repo().get_greeting_by_name(&request.name)? {
+            Some(existing_message) => {
                 // Return existing greeting
-                let greet = Greet::new(0, request.name.clone()); // ID is not returned from DB, using 0
+                let greet = Greet::new(0, request.name.clone());
                 Ok(GreetResponse {
                     message: existing_message,
                     greet: Some(greet),
                 })
             }
-            Ok(None) => {
+            None => {
                 // Create new greet
-                let message = format!("Hello, {}!", request.name); // Generate message
+                let message = format!("Hello, {}!", request.name);
 
-                match uow.greet_repo().create_greeting(&request.name, &message) {
-                    Ok(id) => {
-                        let greet = Greet::new(id as u32, request.name.clone());
-                        Ok(GreetResponse {
-                            message: message.clone(),
-                            greet: Some(greet),
-                        })
-                    }
-                    Err(e) => Err(format!("Failed to create greeting: {}", e)),
-                }
+                let id = uow.greet_repo().create_greeting(&request.name, &message)?;
+                let greet = Greet::new(id as u32, request.name.clone());
+
+                Ok(GreetResponse {
+                    message: message.clone(),
+                    greet: Some(greet),
+                })
             }
-            Err(e) => Err(format!("Failed to check existing greeting: {}", e)),
         }
     }
 
-    // Optional: Simple greet method for the basic greet command
-    pub fn simple_greet(&self, uow: &UnitOfWork, name: &str) -> Result<String, String> {
-        match uow.greet_repo().get_greeting_by_name(name) {
-            Ok(Some(message)) => Ok(message),
-            Ok(None) => {
-                // Create a simple greeting if none exists
+    pub fn simple_greet(&self, uow: &UnitOfWork, name: &str) -> AppResult<String> {
+        if name.trim().is_empty() {
+            return Err(AppError::validation("Name cannot be empty"));
+        }
+
+        match uow.greet_repo().get_greeting_by_name(name)? {
+            Some(message) => Ok(message),
+            None => {
                 let message = format!("Hello, {}!", name);
-                match uow.greet_repo().create_greeting(name, &message) {
-                    Ok(_) => Ok(message),
-                    Err(e) => Err(format!("Failed to create greeting: {}", e)),
-                }
+                uow.greet_repo().create_greeting(name, &message)?;
+                Ok(message)
             }
-            Err(e) => Err(format!("Database error: {}", e)),
         }
     }
 }

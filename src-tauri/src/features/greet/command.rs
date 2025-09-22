@@ -1,5 +1,5 @@
 use super::handler::GreetHandler;
-use super::model::{CreateGreetRequest, Greet, GreetResponse};
+use super::model::{CreateGreetRequest, GreetResponse};
 use crate::unit_of_work::UnitOfWork;
 
 #[tauri::command]
@@ -19,5 +19,7 @@ pub fn create_greet(name: String) -> Result<GreetResponse, String> {
     let handler = GreetHandler::new();
     let request = CreateGreetRequest { name };
 
-    handler.create_greet(&uow, request)
+    handler
+        .create_greet(&uow, request)
+        .map_err(|e| e.to_string())
 }

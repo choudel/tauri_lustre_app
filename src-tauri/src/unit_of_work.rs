@@ -1,7 +1,8 @@
 use rusqlite::Connection;
 
-use crate::connection::MyConnection;
-use crate::features::greet::{GreetRepo, GreetRepository};
+use crate::features::greet::repo::GreetRepo;
+use crate::{connection::MyConnection, features::greet::repo::GreetRepository};
+
 use crate::lazy_repo::LazyRepo;
 use std::sync::{Arc, Mutex, OnceLock};
 
