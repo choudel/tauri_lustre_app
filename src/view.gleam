@@ -5,7 +5,7 @@ import lustre/event
 import lustre/attribute
 import sketch/lustre as sketch_lustre
 import sketch/css
-import types.{type Model, type Msg, CallCommand,CreateGreet, SendTestNotification,UpdateName, SendTimedNotification}
+import types.{type Model, type Msg,Command,Ui, CallCommand,CreateGreet, SendTestNotification,UpdateName,Notification}
 import styles
 
 pub fn view(model: Model, stylesheet) -> Element(Msg) {
@@ -25,7 +25,7 @@ pub fn view(model: Model, stylesheet) -> Element(Msg) {
           False -> styles.button_style()
         },
         [
-          event.on_click(CallCommand("greet")),
+          event.on_click(Command(CallCommand("greet"))),
           attribute.disabled(model.loading),
         ],
         [html.text(case model.loading {
@@ -35,7 +35,7 @@ pub fn view(model: Model, stylesheet) -> Element(Msg) {
       ),
       html.input(
         styles.input_style(),
-        [attribute.readonly(False), attribute.value(model.name), event.on_input(UpdateName),]
+        [attribute.readonly(False), attribute.value(model.name), event.on_input(fn(name) { Ui(UpdateName(name)) }),]
       ),
       html.button(
         case model.loading {
@@ -43,7 +43,7 @@ pub fn view(model: Model, stylesheet) -> Element(Msg) {
           False -> styles.button_style()
         },
         [
-          event.on_click(CreateGreet),
+          event.on_click(Command(CreateGreet)),
           attribute.disabled(model.loading),
         ],
         [html.text(case model.loading {
@@ -67,12 +67,12 @@ pub fn view(model: Model, stylesheet) -> Element(Msg) {
       html.div(styles.button_group_style(), [], [
         html.button(
           styles.notification_button_style(),
-          [event.on_click(SendTestNotification)],
+          [event.on_click(Notification(SendTestNotification))],
           [html.text("Send Instant Notification")]
         ),
         html.button(
           styles.notification_button_secondary_style(),
-          [event.on_click(SendTimedNotification)],
+          [event.on_click(Notification(SendTestNotification))],
           [html.text("Send Timed Notification (3s)")]
         )
       ])

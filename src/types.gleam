@@ -1,5 +1,6 @@
 import gleam/dynamic
 
+// Model definition
 pub type Model {
   Model(
     greeting: String,
@@ -10,12 +11,28 @@ pub type Model {
   )
 }
 
-pub type Msg {
+// Command-related messages
+pub type CommandMsg {
   CallCommand(String)
   CommandResult(String, dynamic.Dynamic)
-  UpdateName(String)
   CreateGreet
+}
+
+// Notification-related messages  
+pub type NotificationMsg {
   SendTestNotification
-  NotificationSent(Bool)
   SendTimedNotification
+  NotificationSent(Bool)
+}
+
+// UI-related messages
+pub type UiMsg {
+  UpdateName(String)
+}
+
+// Main message type - note the constructor names are different from type names
+pub type Msg {
+  Command(CommandMsg)        
+  Notification(NotificationMsg)  
+  Ui(UiMsg)                 
 }

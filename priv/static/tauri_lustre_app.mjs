@@ -12202,15 +12202,11 @@ var CommandResult = class extends CustomType {
     this[1] = $1;
   }
 };
-var UpdateName = class extends CustomType {
-  constructor($0) {
-    super();
-    this[0] = $0;
-  }
-};
 var CreateGreet = class extends CustomType {
 };
 var SendTestNotification = class extends CustomType {
+};
+var SendTimedNotification = class extends CustomType {
 };
 var NotificationSent = class extends CustomType {
   constructor($0) {
@@ -12218,8 +12214,233 @@ var NotificationSent = class extends CustomType {
     this[0] = $0;
   }
 };
-var SendTimedNotification = class extends CustomType {
+var UpdateName = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
 };
+var Command = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
+var Notification = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
+var Ui = class extends CustomType {
+  constructor($0) {
+    super();
+    this[0] = $0;
+  }
+};
+
+// build/dev/javascript/tauri_lustre_app/commands.mjs
+function handle_call_command(model, cmd) {
+  let _block;
+  if (cmd === "greet") {
+    _block = object2(toList([["name", string3("Chouaib")]]));
+  } else if (cmd === "create_greet") {
+    _block = object2(toList([["name", string3("Chouaib1")]]));
+  } else {
+    _block = object2(toList([]));
+  }
+  let args = _block;
+  let effect = from(
+    (dispatch) => {
+      setCallback(
+        (cmd2, result) => {
+          return dispatch(new Command(new CommandResult(cmd2, result)));
+        }
+      );
+      return invoke2(cmd, args);
+    }
+  );
+  return [
+    new Model(
+      model.greeting,
+      model.name,
+      true,
+      model.notification_status,
+      model.notification_count
+    ),
+    effect
+  ];
+}
+function handle_create_greet(model) {
+  let args = object2(toList([["name", string3(model.name)]]));
+  let effect = from(
+    (dispatch) => {
+      setCallback(
+        (cmd, result) => {
+          return dispatch(new Command(new CommandResult(cmd, result)));
+        }
+      );
+      return invoke2("create_greet", args);
+    }
+  );
+  return [
+    new Model(
+      model.greeting,
+      model.name,
+      true,
+      model.notification_status,
+      model.notification_count
+    ),
+    effect
+  ];
+}
+function decode_greet_result(result) {
+  let $ = run(result, string2);
+  if ($ instanceof Ok) {
+    let message = $[0];
+    return message;
+  } else {
+    return "Error: Expected string result";
+  }
+}
+function decode_create_greet_result(result) {
+  let $ = run(result, string2);
+  if ($ instanceof Ok) {
+    let error_message = $[0];
+    return "Error: " + error_message;
+  } else {
+    let $1 = run(
+      result,
+      at(toList(["message"]), string2)
+    );
+    if ($1 instanceof Ok) {
+      let message = $1[0];
+      return message;
+    } else {
+      return "Error: Unexpected result format";
+    }
+  }
+}
+function handle_command_result(model, cmd, dynamic_result) {
+  let _block;
+  if (cmd === "greet") {
+    _block = decode_greet_result(dynamic_result);
+  } else if (cmd === "create_greet") {
+    _block = decode_create_greet_result(dynamic_result);
+  } else {
+    _block = "Unknown command: " + cmd;
+  }
+  let result = _block;
+  return [
+    new Model(
+      "Command " + cmd + " \u2192 " + result,
+      model.name,
+      false,
+      model.notification_status,
+      model.notification_count
+    ),
+    none()
+  ];
+}
+function update_command(model, msg) {
+  if (msg instanceof CallCommand) {
+    let cmd = msg[0];
+    return handle_call_command(model, cmd);
+  } else if (msg instanceof CommandResult) {
+    let cmd = msg[0];
+    let result = msg[1];
+    return handle_command_result(model, cmd, result);
+  } else {
+    return handle_create_greet(model);
+  }
+}
+
+// build/dev/javascript/tauri_lustre_app/notifications.mjs
+function handle_send_test_notification(model) {
+  let effect = from(
+    (dispatch) => {
+      let success2 = send_test_now();
+      return dispatch(new Notification(new NotificationSent(success2)));
+    }
+  );
+  return [
+    new Model(
+      model.greeting,
+      model.name,
+      model.loading,
+      "Sending notification...",
+      model.notification_count
+    ),
+    effect
+  ];
+}
+function handle_send_timed_notification(model) {
+  let effect = from(
+    (dispatch) => {
+      return send_timed_notification(
+        3e3,
+        (success2) => {
+          return dispatch(new Notification(new NotificationSent(success2)));
+        }
+      );
+    }
+  );
+  return [
+    new Model(
+      model.greeting,
+      model.name,
+      model.loading,
+      "Timed notification scheduled (3s)...",
+      model.notification_count
+    ),
+    effect
+  ];
+}
+function handle_notification_sent(model, success2) {
+  let _block;
+  if (success2) {
+    _block = model.notification_count + 1;
+  } else {
+    _block = model.notification_count;
+  }
+  let new_count = _block;
+  let _block$1;
+  if (success2) {
+    _block$1 = "Notification sent successfully!";
+  } else {
+    _block$1 = "Failed to send notification";
+  }
+  let status = _block$1;
+  return [
+    new Model(model.greeting, model.name, model.loading, status, new_count),
+    none()
+  ];
+}
+function update_notification(model, msg) {
+  if (msg instanceof SendTestNotification) {
+    return handle_send_test_notification(model);
+  } else if (msg instanceof SendTimedNotification) {
+    return handle_send_timed_notification(model);
+  } else {
+    let success2 = msg[0];
+    return handle_notification_sent(model, success2);
+  }
+}
+
+// build/dev/javascript/tauri_lustre_app/ui.mjs
+function update_ui(model, msg) {
+  let new_name = msg[0];
+  return [
+    new Model(
+      model.greeting,
+      new_name,
+      model.loading,
+      model.notification_status,
+      model.notification_count
+    ),
+    none()
+  ];
+}
 
 // build/dev/javascript/lustre/lustre/event.mjs
 function is_immediate_event(name) {
@@ -12465,7 +12686,7 @@ function view(model, stylesheet2) {
                   }
                 })(),
                 toList([
-                  on_click(new CallCommand("greet")),
+                  on_click(new Command(new CallCommand("greet"))),
                   disabled(model.loading)
                 ]),
                 toList([
@@ -12486,9 +12707,11 @@ function view(model, stylesheet2) {
                 toList([
                   readonly(false),
                   value(model.name),
-                  on_input((var0) => {
-                    return new UpdateName(var0);
-                  })
+                  on_input(
+                    (name) => {
+                      return new Ui(new UpdateName(name));
+                    }
+                  )
                 ])
               ),
               button(
@@ -12501,7 +12724,7 @@ function view(model, stylesheet2) {
                   }
                 })(),
                 toList([
-                  on_click(new CreateGreet()),
+                  on_click(new Command(new CreateGreet())),
                   disabled(model.loading)
                 ]),
                 toList([
@@ -12556,12 +12779,20 @@ function view(model, stylesheet2) {
                 toList([
                   button(
                     notification_button_style(),
-                    toList([on_click(new SendTestNotification())]),
+                    toList([
+                      on_click(
+                        new Notification(new SendTestNotification())
+                      )
+                    ]),
                     toList([text4("Send Instant Notification")])
                   ),
                   button(
                     notification_button_secondary_style(),
-                    toList([on_click(new SendTimedNotification())]),
+                    toList([
+                      on_click(
+                        new Notification(new SendTestNotification())
+                      )
+                    ]),
                     toList([text4("Send Timed Notification (3s)")])
                   )
                 ])
@@ -12589,172 +12820,15 @@ function init(_2) {
   ];
 }
 function update2(model, msg) {
-  if (msg instanceof CallCommand) {
-    let cmd = msg[0];
-    let _block;
-    if (cmd === "greet") {
-      _block = object2(toList([["name", string3("Chouaib")]]));
-    } else if (cmd === "create_greet") {
-      _block = object2(toList([["name", string3("Chouaib1")]]));
-    } else {
-      _block = object2(toList([]));
-    }
-    let args = _block;
-    let effect = from(
-      (dispatch) => {
-        setCallback(
-          (cmd2, result) => {
-            return dispatch(new CommandResult(cmd2, result));
-          }
-        );
-        return invoke2(cmd, args);
-      }
-    );
-    return [
-      new Model(
-        model.greeting,
-        model.name,
-        true,
-        model.notification_status,
-        model.notification_count
-      ),
-      effect
-    ];
-  } else if (msg instanceof CommandResult) {
-    let cmd = msg[0];
-    let dynamic_result = msg[1];
-    let _block;
-    if (cmd === "greet") {
-      let $ = run(dynamic_result, string2);
-      if ($ instanceof Ok) {
-        let message = $[0];
-        _block = message;
-      } else {
-        _block = "Error: Expected string result";
-      }
-    } else if (cmd === "create_greet") {
-      let $ = run(dynamic_result, string2);
-      if ($ instanceof Ok) {
-        let error_message = $[0];
-        _block = "Error: " + error_message;
-      } else {
-        let $1 = run(
-          dynamic_result,
-          at(toList(["message"]), string2)
-        );
-        if ($1 instanceof Ok) {
-          let message = $1[0];
-          _block = message;
-        } else {
-          _block = "Error: Unexpected result format";
-        }
-      }
-    } else {
-      _block = "Unknown command: " + cmd;
-    }
-    let result = _block;
-    return [
-      new Model(
-        "Command " + cmd + " \u2192 " + result,
-        model.name,
-        false,
-        model.notification_status,
-        model.notification_count
-      ),
-      none()
-    ];
-  } else if (msg instanceof UpdateName) {
-    let new_name = msg[0];
-    return [
-      new Model(
-        model.greeting,
-        new_name,
-        model.loading,
-        model.notification_status,
-        model.notification_count
-      ),
-      none()
-    ];
-  } else if (msg instanceof CreateGreet) {
-    let args = object2(toList([["name", string3(model.name)]]));
-    let effect = from(
-      (dispatch) => {
-        setCallback(
-          (cmd, result) => {
-            return dispatch(new CommandResult(cmd, result));
-          }
-        );
-        return invoke2("create_greet", args);
-      }
-    );
-    return [
-      new Model(
-        model.greeting,
-        model.name,
-        true,
-        model.notification_status,
-        model.notification_count
-      ),
-      effect
-    ];
-  } else if (msg instanceof SendTestNotification) {
-    let effect = from(
-      (dispatch) => {
-        let success2 = send_test_now();
-        return dispatch(new NotificationSent(success2));
-      }
-    );
-    return [
-      new Model(
-        model.greeting,
-        model.name,
-        model.loading,
-        "Sending notification...",
-        model.notification_count
-      ),
-      effect
-    ];
-  } else if (msg instanceof NotificationSent) {
-    let success2 = msg[0];
-    let _block;
-    if (success2) {
-      _block = model.notification_count + 1;
-    } else {
-      _block = model.notification_count;
-    }
-    let new_count = _block;
-    let _block$1;
-    if (success2) {
-      _block$1 = "Notification sent successfully!";
-    } else {
-      _block$1 = "Failed to send notification";
-    }
-    let status = _block$1;
-    return [
-      new Model(model.greeting, model.name, model.loading, status, new_count),
-      none()
-    ];
+  if (msg instanceof Command) {
+    let cmd_msg = msg[0];
+    return update_command(model, cmd_msg);
+  } else if (msg instanceof Notification) {
+    let notif_msg = msg[0];
+    return update_notification(model, notif_msg);
   } else {
-    let effect = from(
-      (dispatch) => {
-        return send_timed_notification(
-          3e3,
-          (success2) => {
-            return dispatch(new NotificationSent(success2));
-          }
-        );
-      }
-    );
-    return [
-      new Model(
-        model.greeting,
-        model.name,
-        model.loading,
-        "Timed notification scheduled (3s)...",
-        model.notification_count
-      ),
-      effect
-    ];
+    let ui_msg = msg[0];
+    return update_ui(model, ui_msg);
   }
 }
 function view2(model, stylesheet2) {
