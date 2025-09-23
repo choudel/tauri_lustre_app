@@ -11604,6 +11604,9 @@ var Cqmin = class extends CustomType {
 function px(value2) {
   return new Px(identity(value2));
 }
+function cqw(value2) {
+  return new Cqw(identity(value2));
+}
 function rem(value2) {
   return new Rem(value2);
 }
@@ -11743,6 +11746,9 @@ function font_size(font_size2) {
 }
 function gap(gap2) {
   return property3("gap", to_string4(gap2));
+}
+function grid_template_columns(grid_template_columns2) {
+  return property3("grid-template-columns", grid_template_columns2);
 }
 function margin(margin2) {
   return property3("margin", to_string4(margin2));
@@ -12565,7 +12571,7 @@ function input_style() {
       margin_right(px(10)),
       border_radius(px(4)),
       border("1px solid #ccc"),
-      width(px(300))
+      width(cqw(100))
     ])
   );
 }
@@ -12596,6 +12602,8 @@ function button_loading_style() {
 function section_style() {
   return class$4(
     toList([
+      display("grid"),
+      grid_template_columns("1fr"),
       margin_bottom(px(30)),
       padding(px(20)),
       border_radius(px(8)),

@@ -1,5 +1,5 @@
 import sketch/css
-import sketch/css/length.{px, rem}
+import sketch/css/length.{px, rem, cqw}
 
 pub fn container_style() {
   css.class([
@@ -20,7 +20,7 @@ pub fn input_style() {
     css.margin_right(px(10)),
     css.border_radius(px(4)),
     css.border("1px solid #ccc"),
-    css.width(px(300)),
+  css.width(cqw(100))
   ])
 }
 pub fn button_style() {
@@ -50,6 +50,8 @@ pub fn button_loading_style() {
 
 pub fn section_style() {
   css.class([
+    css.display("grid"),
+    css.grid_template_columns("1fr"),
     css.margin_bottom(px(30)),
     css.padding(px(20)),
     css.border_radius(px(8)),
